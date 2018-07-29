@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mapa en Leaflet con un marcador asociado a una grafica en D3</title>
+	<meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+   	<link rel="stylesheet" href="embalse/embalse.css" />
+  	<link rel="stylesheet" href="leaflet/leaflet.css"/>
+ 	<script type="text/javascript" src="leaflet/leaflet.js"></script>
+ 	<script type="text/javascript" src="jquery/jquery-3.2.1.js"></script>
+    	<script type="text/javascript" src="d3/d3.js"></script>
+    	<script type="text/javascript" src="embalse/embalse.js"></script>
+   	<script type="text/javascript" src="spin/spin.min.js"></script>
+    	<script type="text/javascript" src="spin/leaflet.spin.min.js"></script>
+</head>
+
+<body>
+
+
+<H2> El Estado de los Embalses en Puerto Rico </H2>
+
+<div id="mapid" style="width: 1600px; height: 600px;"></div>
+
+<script>
+
+
+    ///////////////////////////////////////////////////////////////
+    // para construir el mapa de PR y marcador utilizando Leaflet //
+    ///////////////////////////////////////////////////////////////
+    
+
+    var mymap = L.map('mapid').setView([18.25,-66.3], 9);
+
+    var apiLink = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}'; 
+    
+    var mapLink = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'; 
+
+    var token = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+    
+    L.tileLayer(apiLink, {
+                attribution: mapLink, 
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: token}).addTo(mymap);
+
+
+//-------------------------------------------
+//Marcador para todos los envalses
+//-------------------------------------------
+
+    var Carraizo = L.marker([18.32791,-66.01628]).addTo(mymap),
+	La_Plata = L.marker([18.34300,-66.23607]).addTo(mymap),
+	Cidra = L.marker([18.19690,-66.14072]).addTo(mymap),
+	Patillas = L.marker([18.01774,-66.01850]).addTo(mymap),
+	Toa_Vaca = L.marker([18.10166,-66.48902]).addTo(mymap),
+	Carite = L.marker([18.07524,-66.10683]).addTo(mymap),
+	Rio_Blanco = L.marker([18.22389,-65.78142]).addTo(mymap),
+	Caonillas = L.marker([18.27654,-66.65642]).addTo(mymap),
+	Fajardo = L.marker([18.2969,-65.65858]).addTo(mymap),
+	Guajataca = L.marker([18.39836,-66.9227]).addTo(mymap),
+	Cerrillos = L.marker([18.07703,-66.57547]).addTo(mymap);
+
+    // Arreglo que contiene los datos de cada embalse  
+
+    dataset = [0,0,0,0,0,0,0,0,0,0,0];
+
+    // variable asociada a elemento de "div" 
+
+    var div;
+
+    // id de los embalses
+
+    embalse = ["50059000","50045000","50047550","50093045","50111210","50039995","50076800","50026140","50071225","50010800","50113950"];
+
+    // esto es para activar el "spinner" que indica que se estan buscando datos 
+
+    mymap.spin(true);
+
+    // utilizamos funcion en D3 para buscar datos crudos, filtrarlos, y 
+    // guardarlos en e l arreglo de dataset 
+
+    d3.text(urlEmbalse(embalse[0]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[0] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+	// Se crea un evento al hacer click a cada marcador
+//------------------
+//Marcador Carraizo-
+//------------------
+    Carraizo.on("click", function () {
+             
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         // esto es para conectar el evento popup con el div..
+
+         Carraizo.bindPopup(div,{maxHeight: 300,maxWidth: 300});  //Defines the border of the popup
+
+         // llamamos a la funcion que construye la grafica asociada al marcador
+         // le damos el dataset "limpio", el nombre del embalse, 
+         // y el elemento "div" para que coloque la grafica
+
+         graficaMarcador(dataset[0],regresaNombre(embalse[0]),div);
+    })
+
+    mymap.spin(true);
+
+    //Se repite el proceso para los otros embalses dentro de el arreglo cada
+    //uno teniendo un nombre unico.
+//------------------
+//Marcador La Plata-
+//------------------
+    d3.text(urlEmbalse(embalse[1]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[1] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+    La_Plata.on("click", function () {
+             
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         La_Plata.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[1],regresaNombre(embalse[1]),div);
+    })
+	mymap.spin(true);
+
+//------------------
+//Marcador Cidra   -
+//------------------
+	
+  d3.text(urlEmbalse(embalse[2]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[2] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+
+    Cidra.on("click", function () {
+
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Cidra.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[2],regresaNombre(embalse[2]),div);
+    })
+
+
+//------------------
+//Marcador Patillas-
+//------------------
+     mymap.spin(true);
+
+     d3.text(urlEmbalse(embalse[3]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[3] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Patillas.on("click", function () {
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Patillas.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[3],regresaNombre(embalse[3]),div);
+    })
+
+//------------------
+//Marcador Toa Vaca-
+//------------------
+
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[4]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[4] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Toa_Vaca.on("click", function () {
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+	
+	    Toa_Vaca.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[4],regresaNombre(embalse[4]),div);
+    })
+//------------------
+//Marcador Carite  -
+//------------------
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[5]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[5] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Carite.on("click", function () {
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+	
+	 Carite.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[5],regresaNombre(embalse[5]),div);
+    })
+
+//--------------------
+//Marcador Rio Blanco-
+//--------------------
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[6]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[6] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Rio_Blanco.on("click", function () {
+
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Rio_Blanco.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[6],regresaNombre(embalse[6]),div);//
+    })
+
+//-------------------
+//Marcador Caonillas-
+//-------------------
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[7]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[7] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Caonillas.on("click", function () {
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Caonillas.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[7],regresaNombre(embalse[7]),div);
+    })
+//------------------
+//Marcador Fajardo -
+//------------------
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[8]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[8] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Fajardo.on("click", function () {
+             
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Fajardo.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[8],regresaNombre(embalse[8]),div);
+
+    })
+
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[9]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+		dataset[9] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+//-------------------
+//Marcador Guajataca-
+//-------------------
+    Guajataca.on("click", function () {
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Guajataca.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[9],regresaNombre(embalse[9]),div);
+
+    })
+//-------------------
+//Marcador Cerrillos-
+//-------------------
+    mymap.spin(true);
+
+    d3.text(urlEmbalse(embalse[10]),function(error,data) {
+
+        if (error) {
+            alert("No pude bajar los datos...");
+        }else
+        {
+            var filtrado = filtraDatos(data);
+         
+            dataset[10] = filtrado;
+        }
+
+        mymap.spin(false);
+    
+    })
+
+    Cerrillos.on("click", function () {
+
+         div = $('<div style="width: 300px; height: 300px;"><svg/></div>')[0];
+
+         Cerrillos.bindPopup(div,{maxHeight: 300,maxWidth: 300});
+
+         graficaMarcador(dataset[10],regresaNombre(embalse[10]),div);
+    })
+
+</script>
+
+</body>
+</html>

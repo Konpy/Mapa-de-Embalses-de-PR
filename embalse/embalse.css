@@ -1,0 +1,55 @@
+        path {
+            fill: none;
+            stroke: red;
+            stroke-width: 2px;
+         }
+
+
+        .axisLeft line {
+            stroke: black;
+        }
+
+        .axisLeft path {
+            stroke: black;
+        }
+
+
+        .axisRight line {
+            stroke: black;
+        }
+
+        .axisRight path {
+            stroke: black;
+        }
+
+        .axisTop line {
+            stroke: black;
+        }
+
+        .axisTop path {
+            stroke: black;
+        }
+
+        .axisBottom line {
+            stroke: black;
+        }
+
+        .axisBottom path {
+            stroke: black;
+        }
+
+        .grid line {
+            stroke: lightgrey;
+            stroke-opacity: 0.7;
+            shape-rendering: crispEdges;
+        }
+
+        .grid path {
+            stroke-width: 0;
+        }
+
+
+
+
+
+
